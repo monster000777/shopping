@@ -1,0 +1,2780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!--控制网页在移动设备上的显示方式-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--提供网页的描述信息-->
+    <meta name="description" content="我自己做的购物商城网页">
+    <!--向搜索引擎提供网页的关键词信息-->
+    <meta name="keywords" content="购物，家电，数码，礼品，户外，电商">
+    <title>购物商城</title>
+
+    <link rel="shortcut icon" href="shopping.ico" type="image/x-icon">
+    <link rel="stylesheet" href="assets/font-awesome/css/all.min.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/商城弹窗.css">
+
+    <!--接入tailwind的cdn-->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!--初始化配置-->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#E1251B',
+                        secondary: '#165DFF',
+                        dark: '#333333',
+                        light: '#F5F5F5',
+                        // green: '#22c35d',
+                        // purple: '#7244fb',
+                        'gray-light': '#F8F8F8',
+                        'gray-medium': '#999999',
+                        'gray-dark': '#666666',
+                        'custom-gray': '#444'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+
+                    backgroundImage: {
+                        'sprite': "url('./images/sprite.png')",
+                    },
+                    backgroundPosition: {
+                        'sprite-0-192': '0 -192px',
+                        'sprite-41-192': '-41px -192px',
+                        'sprite-82-192': '-82px -192px',
+                        'sprite-123-192': '-123px -192px',
+                    },
+
+                },
+            }
+        }
+    </script>
+
+    <!--配置tailwind的自定义类-->
+    <style type="text/tailwindcss">
+        /*自定义工具类*/
+        @layer utilities {
+
+            /*性能优化类*/
+            .content-auto {
+                content-visibility: auto;
+            }
+
+            /*滚动条隐藏类*/
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+
+            /*文字阴影类*/
+            .text-shadow {
+                text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.8);
+            }
+
+            /*悬停缩放类*/
+            .hover-scale {
+                transition: transform 0.3s ease;
+            }
+
+            /*鼠标经过放大效果*/
+            .hover-scale:hover {
+                transform: scale(1.03);
+            }
+
+            /*淡入动画*/
+            .animate-fade-in {
+                animation: fadeIn 0.5s ease-in-out;
+            }
+
+            /*滑动进入动画*/
+            .animate-slide-in {
+                animation: slideIn 0.3s ease-out;
+            }
+
+            /*轻弹动画*/
+            .animate-bounce-light {
+                animation: bounceLight 2s infinite;
+            }
+
+            /*自定义动画类*/
+            /*要使用这些动画，需配合 CSS 属性指定动画名称、持续时间等参数*/
+            /*淡入动画*/
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+            /*左侧滑入动画*/
+            @keyframes slideIn {
+                from {
+                    transform: translateX(-10px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            /*轻微弹跳动画*/
+            @keyframes bounceLight {
+                0%, 100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-3px);
+                }
+            }
+        }
+    </style>
+
+</head>
+
+<body class="font-inter bg-gray-light min-h-screen">
+<!-- 顶部导航 -->
+<header class="bg-white shadow-sm sticky top-0 z-50 transition-all duration-300">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+            <!-- 左侧导航 -->
+            <div class="flex items-center flex-1 min-w-0">
+                <!-- Logo -->
+                <a href="#" class="flex items-center flex-shrink-0 space-x-2">
+                    <div class="text-primary text-2xl font-bold">
+                        <i class="fa fa-shopping-bag"></i>
+                    </div>
+                    <span class="text-dark font-bold text-xl sm:text-3xl truncate">购物商城</span>
+                </a>
+
+                <!-- 桌面导航 -->
+                <nav id="mobile-nav" class="hidden md:ml-6 md:flex items-center space-x-4 ml-4 n">
+                    <a href="#"
+                       class="nav-item text-dark hover:text-primary px-2 py-1.5 text-sm sm:text-base font-medium truncate transition-colors duration-200">
+                        首页
+                    </a>
+
+                    <!-- 分类下拉 -->
+                    <div class="relative group">
+                        <div class="flex items-center space-x-1 cursor-pointer">
+                            <span class="nav-item text-dark hover:text-primary px-2 py-1.5 text-sm sm:text-base font-medium truncate transition-colors duration-200">
+                                分类
+                            </span>
+                            <i class="fa fa-angle-down text-gray-500 text-xs transition-transform duration-200 group-hover:rotate-180"></i>
+                        </div>
+                        <div class="absolute left-0 mt-0 w-48 bg-white border border-red-500 rounded-md shadow-lg hidden group-hover:block z-50">
+                            <a href="#one" class="block px-4 py-2 text-gray-800 hover:bg-gray-light rounded-lg">
+                                <i class="fa fa-laptop text-primary mr-3 w-5 text-center"></i>电脑办公
+                            </a>
+                            <a href="#two" class="block px-4 py-2 text-gray-800 hover:bg-gray-light">
+                                <i class="fa fa-mobile text-primary mr-3 w-5 text-center"></i>手机通讯
+                            </a>
+                            <a href="#three" class="block px-4 py-2 text-gray-800 hover:bg-gray-light">
+                                <i class="fa fa-tv text-primary mr-3 w-5 text-center"></i>家用电器
+                            </a>
+                            <a href="#four" class="block px-4 py-2 text-gray-800 hover:bg-gray-light rounded-lg">
+                                <i class="fa fa-gamepad text-primary mr-3 w-5 text-center"></i>数码影音
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 中等屏幕隐藏的导航项 -->
+                    <div class="hidden lg:flex items-center space-x-4">
+                        <a href="#"
+                           class="nav-item text-dark hover:text-primary px-2 py-1.5 text-sm sm:text-base font-medium truncate transition-colors duration-200">
+                            限时抢购
+                        </a>
+                        <a href="#"
+                           class="nav-item text-dark hover:text-primary px-2 py-1.5 text-sm sm:text-base font-medium truncate transition-colors duration-200">
+                            品牌
+                        </a>
+                    </div>
+
+                    <a href="#"
+                       class="nav-item text-dark hover:text-primary px-2 py-1.5 text-sm sm:text-base font-medium truncate transition-colors duration-200">
+                        客服
+                    </a>
+                </nav>
+            </div>
+
+            <!-- 右侧功能 -->
+            <div class="flex items-center space-x-2 sm:space-x-3 ml-2 flex-shrink-0">
+                <!-- 搜索框 -->
+                <div class="hidden sm:block relative min-w-[120px] lg:min-w-[160px]">
+                    <input type="text" placeholder="搜索..."
+                           class="w-full pl-3 pr-8 py-1.5 text-sm rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200">
+                    <button class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-primary transition-colors duration-200">
+                        <i class="fa fa-search text-sm"></i>
+                    </button>
+                </div>
+
+                <!--收纳搜索框-->
+                <div id="search"
+                     class="hidden z-30">
+                    <input type="text" placeholder="搜索..."
+                           class="w-40 pl-3 pr-8 py-1.5 text-sm rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200">
+                </div>
+
+                <!--搜索框收纳图标-->
+                <button id="click2"
+                        class="sm:hidden p-1.5 text-dark hover:text-primary transition-colors duration-200">
+                    <i class="fa fa-search text-sm"></i>
+                </button>
+
+                <!-- 购物车 -->
+                <button class="relative p-1.5 text-dark hover:text-primary transition-colors duration-200">
+                    <i class="fa fa-shopping-cart text-lg"></i>
+                    <span id="shopping"
+                          class="absolute -top-0.5 -right-0.5 bg-primary text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center"
+                          style="display: none">0</span>
+                </button>
+
+                <!-- 移动端菜单按钮 -->
+                <button id="click"
+                        class="md:hidden p-1.5 text-dark hover:text-primary transition-colors duration-200 rounded-lg shadow-sm bg-white hover:bg-gray-50 z-20 flex-shrink-0">
+                    <i class="fa fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div class="container mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
+    <!-- 侧边栏 -->
+    <div class="w-full lg:w-64 lg:sticky lg:top-20">
+        <!-- 商品分类 -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="bg-primary text-white p-4">
+                <h2 class="font-bold text-lg">商品分类</h2>
+            </div>
+            <div class="category-container max-h-[600px] overflow-y-auto scrollbar-hide">
+                <ul class="category-list">
+                    <!-- 分类项 1 -->
+                    <li class="category-item group">
+                        <div class="flex items-center justify-between p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-light transition-colors duration-200">
+                            <div class="flex items-center">
+                                <i class="fa fa-laptop text-primary mr-3 w-5 text-center"></i>
+                                <span class="text-dark font-medium">电脑办公</span>
+                            </div>
+                            <i class="fa fa-angle-down text-gray-medium transition-transform duration-200 group-hover:rotate-180"></i>
+                        </div>
+                        <div class="sub-category relative bg-white shadow-lg border border-red-500 rounded-lg p-4 z-20 hidden group-hover:block animate-fade-in">
+                            <div class="grid grid-cols-2 gap-4">
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-desktop text-primary mr-2"></i>
+                                    <span>台式机</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-laptop text-primary mr-2"></i>
+                                    <span>笔记本</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-print text-primary mr-2"></i>
+                                    <span>打印机</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-mouse-pointer text-primary mr-2"></i>
+                                    <span>鼠标键盘</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-headphones text-primary mr-2"></i>
+                                    <span>耳机</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-microchip text-primary mr-2"></i>
+                                    <span>硬件配件</span>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- 分类项 2 -->
+                    <li class="category-item group">
+                        <div class="flex items-center justify-between p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-light transition-colors duration-200">
+                            <div class="flex items-center">
+                                <i class="fa fa-mobile text-primary mr-3 w-5 text-center"></i>
+                                <span class="text-dark font-medium">手机通讯</span>
+                            </div>
+                            <i class="fa fa-angle-down text-gray-medium transition-transform duration-200 group-hover:rotate-180"></i>
+                        </div>
+                        <div class="sub-category relative bg-white shadow-lg border border-red-500 rounded-lg p-4 z-20 hidden group-hover:block animate-fade-in">
+                            <div class="grid grid-cols-2 gap-4">
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-mobile text-primary mr-2"></i>
+                                    <span>智能手机</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-battery-full text-primary mr-2"></i>
+                                    <span>充电器</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-camera text-primary mr-2"></i>
+                                    <span>手机配件</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-shield-alt text-primary mr-2"></i>
+                                    <span>手机保护套</span>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- 分类项 3 -->
+                    <li class="category-item group">
+                        <div class="flex items-center justify-between p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-light transition-colors duration-200">
+                            <div class="flex items-center">
+                                <i class="fa fa-tv text-primary mr-3 w-5 text-center"></i>
+                                <span class="text-dark font-medium">家用电器</span>
+                            </div>
+                            <i class="fa fa-angle-down text-gray-medium transition-transform duration-200 group-hover:rotate-180"></i>
+                        </div>
+                        <div class="sub-category relative bg-white shadow-lg border border-red-500 rounded-lg p-4 z-20 hidden group-hover:block animate-fade-in">
+                            <div class="grid grid-cols-2 gap-4">
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-tv text-primary mr-2"></i>
+                                    <span>电视</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-snowflake text-primary mr-2"></i>
+                                    <span>冰箱</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-tint text-primary mr-2"></i>
+                                    <span>洗衣机</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-fire text-primary mr-2"></i>
+                                    <span>热水器</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-coffee text-primary mr-2"></i>
+                                    <span>厨房电器</span>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- 分类项 4 -->
+                    <li class="category-item group">
+                        <div class="flex items-center justify-between p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-light transition-colors duration-200">
+                            <div class="flex items-center">
+                                <i class="fa fa-gamepad text-primary mr-3 w-5 text-center"></i>
+                                <span class="text-dark font-medium">数码影音</span>
+                            </div>
+                            <i class="fa fa-angle-down text-gray-medium transition-transform duration-200 group-hover:rotate-180"></i>
+                        </div>
+                        <div class="sub-category relative bg-white shadow-lg border border-red-500 rounded-lg p-4 z-20 hidden group-hover:block animate-fade-in">
+                            <div class="grid grid-cols-2 gap-4">
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-camera text-primary mr-2"></i>
+                                    <span>相机</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-video text-primary mr-2"></i>
+                                    <span>摄像机</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-music text-primary mr-2"></i>
+                                    <span>音乐播放器</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-gamepad text-primary mr-2"></i>
+                                    <span>游戏机</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-film text-primary mr-2"></i>
+                                    <span>影音设备</span>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- 分类项 5 -->
+                    <li class="category-item group">
+                        <div class="flex items-center justify-between p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-light transition-colors duration-200">
+                            <div class="flex items-center">
+                                <i class="fa fa-gift text-primary mr-3 w-5 text-center"></i>
+                                <span class="text-dark font-medium">礼品鲜花</span>
+                            </div>
+                            <i class="fa fa-angle-down text-gray-medium transition-transform duration-200 group-hover:rotate-180"></i>
+                        </div>
+                        <div class="sub-category relative bg-white shadow-lg border border-red-500 rounded-lg p-4 z-20 hidden group-hover:block animate-fade-in">
+                            <div class="grid grid-cols-2 gap-4">
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-gift text-primary mr-2"></i>
+                                    <span>创意礼品</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-gem text-primary mr-2"></i>
+                                    <span>珠宝首饰</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-heart text-primary mr-2"></i>
+                                    <span>情侣礼品</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-birthday-cake text-primary mr-2"></i>
+                                    <span>生日礼品</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-leaf text-primary mr-2"></i>
+                                    <span>鲜花绿植</span>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- 分类项 6 -->
+                    <li class="category-item group">
+                        <div class="flex items-center justify-between p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-light transition-colors duration-200">
+                            <div class="flex items-center">
+                                <i class="fa fa-car text-primary mr-3 w-5 text-center"></i>
+                                <span class="text-dark font-medium">汽车用品</span>
+                            </div>
+                            <i class="fa fa-angle-down text-gray-medium transition-transform duration-200 group-hover:rotate-180"></i>
+                        </div>
+                        <div class="sub-category relative bg-white shadow-lg border border-red-500 rounded-lg p-4 z-20 hidden group-hover:block animate-fade-in">
+                            <div class="grid grid-cols-2 gap-4">
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-car text-primary mr-2"></i>
+                                    <span>内饰用品</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-key text-primary mr-2"></i>
+                                    <span>外饰改装</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-wrench text-primary mr-2"></i>
+                                    <span>维修保养</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-lock text-primary mr-2"></i>
+                                    <span>安全防盗</span>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- 分类项 7 -->
+                    <li class="category-item group">
+                        <div class="flex items-center justify-between p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-light transition-colors duration-200">
+                            <div class="flex items-center">
+                                <i class="fa fa-home text-primary mr-3 w-5 text-center"></i>
+                                <span class="text-dark font-medium">家居家装</span>
+                            </div>
+                            <i class="fa fa-angle-down text-gray-medium transition-transform duration-200 group-hover:rotate-180"></i>
+                        </div>
+                        <div class="sub-category relative bg-white shadow-lg border border-red-500 rounded-lg p-4 z-20 hidden group-hover:block animate-fade-in">
+                            <div class="grid grid-cols-2 gap-4">
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-bed text-primary mr-2"></i>
+                                    <span>家具</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-lightbulb text-primary mr-2"></i>
+                                    <span>灯具</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-tint text-primary mr-2"></i>
+                                    <span>卫浴</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fas fa-cut text-primary mr-2"></i>
+                                    <span>装饰用品</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fas fa-utensils text-primary mr-2"></i>
+                                    <span>厨房用品</span>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- 分类项 8 -->
+                    <li class="category-item group">
+                        <div class="flex items-center justify-between p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-light transition-colors duration-200">
+                            <div class="flex items-center">
+                                <i class="fa fa-futbol text-primary mr-3 w-5 text-center"></i>
+                                <span class="text-dark font-medium">运动户外</span>
+                            </div>
+                            <i class="fa fa-angle-down text-gray-medium transition-transform duration-200 group-hover:rotate-180"></i>
+                        </div>
+                        <div class="sub-category relative bg-white shadow-lg border border-red-500 rounded-lg p-4 z-20 hidden group-hover:block animate-fade-in">
+                            <div class="grid grid-cols-2 gap-4">
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-futbol text-primary mr-2"></i>
+                                    <span>健身器材</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-bicycle text-primary mr-2"></i>
+                                    <span>自行车</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-tree text-primary mr-2"></i>
+                                    <span>户外装备</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-trophy text-primary mr-2"></i>
+                                    <span>运动服饰</span>
+                                </a>
+                                <a href="#"
+                                   class="flex items-center p-2 hover:bg-gray-light rounded transition-colors duration-200">
+                                    <i class="fa fa-swimming-pool text-primary mr-2"></i>
+                                    <span>水上运动</span>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 推荐商品 -->
+        <div class="bg-white rounded-lg shadow-sm mt-6 overflow-hidden">
+            <div class="bg-blue-600 text-white p-4">
+                <h2 class="font-bold text-lg">为你推荐</h2>
+            </div>
+            <div class="p-4">
+                <div class="recommend-item flex items-center py-3 border-b border-gray-100 last:border-0">
+                    <img src="https://picsum.photos/80/80?random=1" alt="推荐商品"
+                         class="w-16 h-16 object-cover rounded hover-scale">
+                    <div class="ml-3 flex-1">
+                        <a href="#"
+                           class="text-dark hover:text-primary line-clamp-2 text-sm transition-colors duration-200">高品质无线蓝牙耳机
+                            立体声降噪</a>
+                        <div class="flex items-center mt-1">
+                            <span class="text-primary font-bold">¥199</span>
+                            <span class="text-gray-medium text-xs line-through ml-2">¥299</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="recommend-item flex items-center py-3 border-b border-gray-100 last:border-0">
+                    <img src="https://picsum.photos/80/80?random=2" alt="推荐商品"
+                         class="w-16 h-16 object-cover rounded hover-scale">
+                    <div class="ml-3 flex-1">
+                        <a href="#"
+                           class="text-dark hover:text-primary line-clamp-2 text-sm transition-colors duration-200">超薄商务笔记本电脑
+                            14英寸高清屏</a>
+                        <div class="flex items-center mt-1">
+                            <span class="text-primary font-bold">¥4599</span>
+                            <span class="text-gray-medium text-xs line-through ml-2">¥5299</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="recommend-item flex items-center py-3 border-b border-gray-100 last:border-0">
+                    <img src="https://picsum.photos/80/80?random=3" alt="推荐商品"
+                         class="w-16 h-16 object-cover rounded hover-scale">
+                    <div class="ml-3 flex-1">
+                        <a href="#"
+                           class="text-dark hover:text-primary line-clamp-2 text-sm transition-colors duration-200">智能手表
+                            运动监测 心率睡眠监测</a>
+                        <div class="flex items-center mt-1">
+                            <span class="text-primary font-bold">¥399</span>
+                            <span class="text-gray-medium text-xs line-through ml-2">¥499</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="recommend-item flex items-center py-3 border-b border-gray-100 last:border-0">
+                    <img src="https://picsum.photos/80/80?random=4" alt="推荐商品"
+                         class="w-16 h-16 object-cover rounded hover-scale">
+                    <div class="ml-3 flex-1">
+                        <a href="#"
+                           class="text-dark hover:text-primary line-clamp-2 text-sm transition-colors duration-200">家用多功能料理机
+                            搅拌机</a>
+                        <div class="flex items-center mt-1">
+                            <span class="text-primary font-bold">¥259</span>
+                            <span class="text-gray-medium text-xs line-through ml-2">¥329</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 特惠活动 -->
+        <div class="bg-white rounded-lg shadow-sm mt-6 overflow-hidden">
+            <div class="bg-green-500 text-white p-4">
+                <h2 class="font-bold text-lg">特惠活动</h2>
+            </div>
+            <div class="p-4">
+                <div class="recommend-item flex items-center py-3 border-b border-gray-100 last:border-0">
+                    <img src="https://picsum.photos/80/80?random=5" alt="推荐商品"
+                         class="w-16 h-16 object-cover rounded hover-scale">
+                    <div class="ml-3 flex-1">
+                        <a href="#"
+                           class="text-dark hover:text-primary line-clamp-2 text-sm transition-colors duration-200">高品质无线蓝牙耳机
+                            立体声降噪</a>
+                        <div class="flex items-center mt-1">
+                            <span class="text-primary font-bold">¥199</span>
+                            <span class="text-gray-medium text-xs line-through ml-2">¥299</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="recommend-item flex items-center py-3 border-b border-gray-100 last:border-0">
+                    <img src="https://picsum.photos/80/80?random=6" alt="推荐商品"
+                         class="w-16 h-16 object-cover rounded hover-scale">
+                    <div class="ml-3 flex-1">
+                        <a href="#"
+                           class="text-dark hover:text-primary line-clamp-2 text-sm transition-colors duration-200">超薄商务笔记本电脑
+                            14英寸高清屏</a>
+                        <div class="flex items-center mt-1">
+                            <span class="text-primary font-bold">¥4599</span>
+                            <span class="text-gray-medium text-xs line-through ml-2">¥5299</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="recommend-item flex items-center py-3 border-b border-gray-100 last:border-0">
+                    <img src="https://picsum.photos/80/80?random=7" alt="推荐商品"
+                         class="w-16 h-16 object-cover rounded hover-scale">
+                    <div class="ml-3 flex-1">
+                        <a href="#"
+                           class="text-dark hover:text-primary line-clamp-2 text-sm transition-colors duration-200">智能手表
+                            运动监测 心率睡眠监测</a>
+                        <div class="flex items-center mt-1">
+                            <span class="text-primary font-bold">¥399</span>
+                            <span class="text-gray-medium text-xs line-through ml-2">¥499</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="recommend-item flex items-center py-3 border-b border-gray-100 last:border-0">
+                    <img src="https://picsum.photos/80/80?random=8" alt="推荐商品"
+                         class="w-16 h-16 object-cover rounded hover-scale">
+                    <div class="ml-3 flex-1">
+                        <a href="#"
+                           class="text-dark hover:text-primary line-clamp-2 text-sm transition-colors duration-200">家用多功能料理机
+                            搅拌机</a>
+                        <div class="flex items-center mt-1">
+                            <span class="text-primary font-bold">¥259</span>
+                            <span class="text-gray-medium text-xs line-through ml-2">¥329</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 进口好物 -->
+        <div class="bg-white rounded-lg shadow-sm mt-6 overflow-hidden">
+            <div class="bg-purple-600 text-white p-4">
+                <h2 class="font-bold text-lg">进口好物</h2>
+            </div>
+            <div class="p-4">
+                <div class="recommend-item flex items-center py-3 border-b border-gray-100 last:border-0">
+                    <img src="https://picsum.photos/80/80?random=9" alt="推荐商品"
+                         class="w-16 h-16 object-cover rounded hover-scale">
+                    <div class="ml-3 flex-1">
+                        <a href="#"
+                           class="text-dark hover:text-primary line-clamp-2 text-sm transition-colors duration-200">高品质无线蓝牙耳机
+                            立体声降噪</a>
+                        <div class="flex items-center mt-1">
+                            <span class="text-primary font-bold">¥199</span>
+                            <span class="text-gray-medium text-xs line-through ml-2">¥299</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="recommend-item flex items-center py-3 border-b border-gray-100 last:border-0">
+                    <img src="https://picsum.photos/80/80?random=10" alt="推荐商品"
+                         class="w-16 h-16 object-cover rounded hover-scale">
+                    <div class="ml-3 flex-1">
+                        <a href="#"
+                           class="text-dark hover:text-primary line-clamp-2 text-sm transition-colors duration-200">超薄商务笔记本电脑
+                            14英寸高清屏</a>
+                        <div class="flex items-center mt-1">
+                            <span class="text-primary font-bold">¥4599</span>
+                            <span class="text-gray-medium text-xs line-through ml-2">¥5299</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="recommend-item flex items-center py-3 border-b border-gray-100 last:border-0">
+                    <img src="https://picsum.photos/80/80?random=11" alt="推荐商品"
+                         class="w-16 h-16 object-cover rounded hover-scale">
+                    <div class="ml-3 flex-1">
+                        <a href="#"
+                           class="text-dark hover:text-primary line-clamp-2 text-sm transition-colors duration-200">智能手表
+                            运动监测 心率睡眠监测</a>
+                        <div class="flex items-center mt-1">
+                            <span class="text-primary font-bold">¥399</span>
+                            <span class="text-gray-medium text-xs line-through ml-2">¥499</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="recommend-item flex items-center py-3 border-b border-gray-100 last:border-0">
+                    <img src="https://picsum.photos/80/80?random=12" alt="推荐商品"
+                         class="w-16 h-16 object-cover rounded hover-scale">
+                    <div class="ml-3 flex-1">
+                        <a href="#"
+                           class="text-dark hover:text-primary line-clamp-2 text-sm transition-colors duration-200">家用多功能料理机
+                            搅拌机</a>
+                        <div class="flex items-center mt-1">
+                            <span class="text-primary font-bold">¥259</span>
+                            <span class="text-gray-medium text-xs line-through ml-2">¥329</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="flex-1">
+        <!-- 轮播图 -->
+        <div class="relative rounded-lg overflow-hidden shadow-md mb-6 h-[350px] md:h-[400px]">
+            <div class="carousel-container relative h-full">
+                <div class="carousel-item absolute inset-0 opacity-100 transition-opacity duration-1000">
+                    <img src="https://picsum.photos/1200/400?random=10" alt="轮播图1"
+                         class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent flex items-center">
+                        <div class="px-8 md:px-16 max-w-xl">
+                            <h3 class="text-white text-2xl md:text-3xl font-bold mb-2 animate-fade-in">夏日特惠活动</h3>
+                            <p class="text-white/90 mb-4 animate-slide-in">全场商品低至5折起，限时抢购，先到先得！</p>
+                            <button class="bg-white text-primary px-6 py-2 rounded-full font-medium hover:bg-primary hover:text-white transition-colors duration-300 animate-bounce-light">
+                                立即抢购
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item absolute inset-0 opacity-0 transition-opacity duration-1000">
+                    <img src="https://picsum.photos/1200/400?random=11" alt="轮播图2"
+                         class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent flex items-center">
+                        <div class="px-8 md:px-16 max-w-xl">
+                            <h3 class="text-white text-2xl md:text-3xl font-bold mb-2 animate-fade-in">新品上市</h3>
+                            <p class="text-white/90 mb-4 animate-slide-in">全新系列电子产品震撼登场，引领科技潮流！</p>
+                            <button class="bg-white text-primary px-6 py-2 rounded-full font-medium hover:bg-primary hover:text-white transition-colors duration-300 animate-bounce-light">
+                                了解更多
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item absolute inset-0 opacity-0 transition-opacity duration-1000">
+                    <img src="https://picsum.photos/1200/400?random=12" alt="轮播图3"
+                         class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent flex items-center">
+                        <div class="px-8 md:px-16 max-w-xl">
+                            <h3 class="text-white text-2xl md:text-3xl font-bold mb-2 animate-fade-in">会员专享</h3>
+                            <p class="text-white/90 mb-4 animate-slide-in">会员日大酬宾，独家折扣，额外满减，积分翻倍！</p>
+                            <button class="bg-white text-primary px-6 py-2 rounded-full font-medium hover:bg-primary hover:text-white transition-colors duration-300 animate-bounce-light">
+                                立即加入
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 轮播指示器 -->
+                <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                    <button class="w-3 h-3 rounded-full bg-white/70 hover:bg-white carousel-indicator active transition-colors duration-200"></button>
+                    <button class="w-3 h-3 rounded-full bg-white/70 hover:bg-white carousel-indicator transition-colors duration-200"></button>
+                    <button class="w-3 h-3 rounded-full bg-white/70 hover:bg-white carousel-indicator transition-colors duration-200"></button>
+                </div>
+
+                <!-- 轮播控制按钮 -->
+                <button class="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors duration-200 carousel-prev">
+                    <i class="fa fa-angle-left text-xl"></i>
+                </button>
+                <button class="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors duration-200 carousel-next">
+                    <i class="fa fa-angle-right text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 分类导航 -->
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+            <a href="#one"
+               class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow duration-200 hover-scale">
+                <div class="w-14 h-14 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-3">
+                    <i class="fa fa-laptop text-primary text-xl"></i>
+                </div>
+                <span class="text-dark font-medium">电脑办公</span>
+            </a>
+            <a href="#two"
+               class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow duration-200 hover-scale">
+                <div class="w-14 h-14 mx-auto bg-secondary/10 rounded-full flex items-center justify-center mb-3">
+                    <i class="fa fa-mobile text-secondary text-xl"></i>
+                </div>
+                <span class="text-dark font-medium">手机通讯</span>
+            </a>
+            <a href="#three"
+               class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow duration-200 hover-scale">
+                <div class="w-14 h-14 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-3">
+                    <i class="fa fa-tv text-green-600 text-xl"></i>
+                </div>
+                <span class="text-dark font-medium">家用电器</span>
+            </a>
+            <a href="#four"
+               class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow duration-200 hover-scale">
+                <div class="w-14 h-14 mx-auto bg-purple-100 rounded-full flex items-center justify-center mb-3">
+                    <i class="fa fa-gamepad text-purple-600 text-xl"></i>
+                </div>
+                <span class="text-dark font-medium">数码影音</span>
+            </a>
+            <a href="#five"
+               class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow duration-200 hover-scale">
+                <div class="w-14 h-14 mx-auto bg-yellow-100 rounded-full flex items-center justify-center mb-3">
+                    <i class="fa fa-gift text-yellow-600 text-xl"></i>
+                </div>
+                <span class="text-dark font-medium">礼品鲜花</span>
+            </a>
+            <a href="#six"
+               class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow duration-200 hover-scale">
+                <div class="w-14 h-14 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-3">
+                    <i class="fa fa-car text-red-600 text-xl"></i>
+                </div>
+                <span class="text-dark font-medium">汽车用品</span>
+            </a>
+        </div>
+
+        <!-- 热销商品 -->
+        <div id="model1" class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-dark">热销商品</h2>
+                <a href="#" class="text-primary hover:text-primary/80 flex items-center transition-colors duration-200">
+                    <span>查看更多</span>
+                    <i class="fa fa-angle-right ml-1"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 商品卡片 1 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=20" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">Apple iPhone 14 Pro 256GB 暗紫色
+                            支持移动联通电信5G</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.8 (128)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8999</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 2 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=21" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">华为 MateBook 14s 2023款 12代酷睿i5 16G 512G
+                            2.5K 90Hz</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.2 (86)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥5699</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥6299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 3 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=22" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">优惠</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">小米 13 Pro 骁龙8 Gen2 徕卡三摄 2K曲面屏
+                            12GB+256GB</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.9 (215)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥4999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥5699</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 4 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=23" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">三星 Galaxy S23 Ultra 256GB 幻影黑 骁龙8
+                            Gen2 5G手机</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.7 (156)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7399</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 1 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=24" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">Apple iPhone 14 Pro 256GB 暗紫色
+                            支持移动联通电信5G</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.8 (128)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8999</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 2 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=25" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">华为 MateBook 14s 2023款 12代酷睿i5 16G 512G
+                            2.5K 90Hz</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.2 (86)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥5699</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥6299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 3 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=26" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">优惠</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">小米 13 Pro 骁龙8 Gen2 徕卡三摄 2K曲面屏
+                            12GB+256GB</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.9 (215)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥4999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥5699</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 4 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=27" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">三星 Galaxy S23 Ultra 256GB 幻影黑 骁龙8
+                            Gen2 5G手机</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.7 (156)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7399</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        <!-- 广告区域-限时秒杀 -->
+        <div class="bg-gradient-to-r from-primary to-secondary rounded-lg overflow-hidden mb-8 h-48 md:h-64 flex items-center">
+            <div class="px-8 md:px-12">
+                <h3 class="text-white text-2xl md:text-3xl font-bold mb-2">限时秒杀</h3>
+                <p class="text-white/90 mb-4">每日整点限时抢购，低至1折起，数量有限！</p>
+                <div class="flex items-center space-x-2 mb-4">
+                    <div id="hour"
+                         class="bg-white text-primary w-10 h-10 rounded-md flex items-center justify-center font-bold text-lg">
+                        12
+                    </div>
+                    <span class="text-white">:</span>
+                    <div id="minutes"
+                         class="bg-white text-primary w-10 h-10 rounded-md flex items-center justify-center font-bold text-lg">
+                        30
+                    </div>
+                    <span class="text-white">:</span>
+                    <div id="second"
+                         class="bg-white text-primary w-10 h-10 rounded-md flex items-center justify-center font-bold text-lg">
+                        45
+                    </div>
+                </div>
+                <button class="bg-white text-primary px-6 py-2 rounded-full font-medium hover:bg-white/90 transition-colors duration-300">
+                    立即抢购
+                </button>
+            </div>
+            <div class="hidden md:block flex-1 h-full">
+                <img src="https://picsum.photos/600/300?random=30" alt="广告图片" class="w-full h-full object-cover">
+            </div>
+        </div>
+
+        <!-- 新品上市 -->
+        <div id="model2" class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-dark">新品上市</h2>
+                <a href="#" class="text-primary hover:text-primary/80 flex items-center transition-colors duration-200">
+                    <span>查看更多</span>
+                    <i class="fa fa-angle-right ml-1"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 商品卡片 5 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=40" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">索尼（SONY） WH-1000XM5 头戴式无线降噪耳机
+                            黑色</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">5.0 (42)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥2799</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥2999</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 6 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=41" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">大疆 DJI Mini 3 Pro 航拍无人机 4K视频 智能航拍
+                            折叠便携</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.8 (67)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥4788</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥5288</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 7 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=42" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">Apple Watch Series 8 GPS + 蜂窝网络 45毫米
+                            星光色铝金属表壳</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.3 (95)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥3199</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥3599</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 8 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=43" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">微软（Microsoft） Surface Pro 9 二合一平板电脑
+                            13英寸</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.7 (58)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7188</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥7988</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- 商品卡片 5 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=44" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">索尼（SONY） WH-1000XM5 头戴式无线降噪耳机
+                            黑色</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">5.0 (42)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥2799</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥2999</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 6 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=45" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">大疆 DJI Mini 3 Pro 航拍无人机 4K视频 智能航拍
+                            折叠便携</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.8 (67)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥4788</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥5288</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 7 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=46" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">Apple Watch Series 8 GPS + 蜂窝网络 45毫米
+                            星光色铝金属表壳</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.3 (95)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥3199</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥3599</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 8 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=47" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">微软（Microsoft） Surface Pro 9 二合一平板电脑
+                            13英寸</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.7 (58)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7188</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥7988</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        <!-- 广告区域-国家补贴 -->
+        <div class="bg-gradient-to-r from-green-600 to-secondary rounded-lg overflow-hidden mb-8 h-48 md:h-64 flex items-center">
+            <div class="px-8 md:px-12">
+                <h3 class="text-white text-2xl md:text-3xl font-bold mb-2">国家补贴</h3>
+                <p class="text-white/90 mb-4">数码补贴‘智’达万家，国家让科技‘惠’及指尖！</p>
+                <div class="flex items-center space-x-2 mb-4">
+                    <!--<div class="bg-white text-green-600 w-10 h-10 rounded-md flex items-center justify-center font-bold text-lg">
+                        12
+                    </div>
+                    <span class="text-white">:</span>
+                    <div class="bg-white text-green-600 w-10 h-10 rounded-md flex items-center justify-center font-bold text-lg">
+                        30
+                    </div>
+                    <span class="text-white">:</span>
+                    <div class="bg-white text-green-600 w-10 h-10 rounded-md flex items-center justify-center font-bold text-lg">
+                        45
+                    </div>-->
+                    <div class="text-shadow text-yellow-300 text-3xl rounded-md flex items-center justify-center font-bold">
+                        享八折优惠
+                    </div>
+                </div>
+                <button class="bg-white text-green-600 px-6 py-2 rounded-full font-medium hover:bg-white/90 transition-colors duration-300">
+                    立即参与
+                </button>
+            </div>
+            <div class="hidden md:block flex-1 h-full">
+                <img src="https://picsum.photos/600/300?random=31" alt="广告图片" class="w-full h-full object-cover">
+            </div>
+        </div>
+
+
+        <!-- 电脑办公 -->
+        <div id="one" class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-dark"><i class="fa fa-laptop text-primary text-xl"> 电脑办公</i></h2>
+                <a href="#" class="text-primary hover:text-primary/80 flex items-center transition-colors duration-200">
+                    <span>查看更多</span>
+                    <i class="fa fa-angle-right ml-1"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 商品卡片 1 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=48" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">Apple iPhone 14 Pro 256GB 暗紫色
+                            支持移动联通电信5G</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.8 (128)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8999</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 2 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=49" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">华为 MateBook 14s 2023款 12代酷睿i5 16G 512G
+                            2.5K 90Hz</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.2 (86)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥5699</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥6299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 3 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=50" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">优惠</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">小米 13 Pro 骁龙8 Gen2 徕卡三摄 2K曲面屏
+                            12GB+256GB</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.9 (215)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥4999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥5699</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 4 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=51" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">三星 Galaxy S23 Ultra 256GB 幻影黑 骁龙8
+                            Gen2 5G手机</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.7 (156)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7399</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 手机通讯 -->
+        <div id="two" class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-dark"><i class="fa fa-mobile text-secondary text-xl"> 手机通讯</i>
+                </h2>
+                <a href="#" class="text-primary hover:text-primary/80 flex items-center transition-colors duration-200">
+                    <span>查看更多</span>
+                    <i class="fa fa-angle-right ml-1"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 商品卡片 1 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=52" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">Apple iPhone 14 Pro 256GB 暗紫色
+                            支持移动联通电信5G</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.8 (128)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8999</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 2 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=53" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">华为 MateBook 14s 2023款 12代酷睿i5 16G 512G
+                            2.5K 90Hz</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.2 (86)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥5699</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥6299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 3 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=54" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">优惠</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">小米 13 Pro 骁龙8 Gen2 徕卡三摄 2K曲面屏
+                            12GB+256GB</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.9 (215)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥4999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥5699</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 4 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=55" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">三星 Galaxy S23 Ultra 256GB 幻影黑 骁龙8
+                            Gen2 5G手机</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.7 (156)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7399</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 家用电器 -->
+        <div id="three" class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-dark"><i class="fa fa-tv text-green-600 text-xl"> 家用电器</i></h2>
+                <a href="#" class="text-primary hover:text-primary/80 flex items-center transition-colors duration-200">
+                    <span>查看更多</span>
+                    <i class="fa fa-angle-right ml-1"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 商品卡片 1 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=56" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">Apple iPhone 14 Pro 256GB 暗紫色
+                            支持移动联通电信5G</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.8 (128)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8999</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 2 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=57" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">华为 MateBook 14s 2023款 12代酷睿i5 16G 512G
+                            2.5K 90Hz</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.2 (86)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥5699</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥6299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 3 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=58" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">优惠</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">小米 13 Pro 骁龙8 Gen2 徕卡三摄 2K曲面屏
+                            12GB+256GB</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.9 (215)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥4999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥5699</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 4 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=59" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">三星 Galaxy S23 Ultra 256GB 幻影黑 骁龙8
+                            Gen2 5G手机</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.7 (156)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7399</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数码影音 -->
+        <div id="four" class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-dark"><i class="fa fa-gamepad text-purple-600 text-xl"> 数码影音</i>
+                </h2>
+                <a href="#" class="text-primary hover:text-primary/80 flex items-center transition-colors duration-200">
+                    <span>查看更多</span>
+                    <i class="fa fa-angle-right ml-1"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 商品卡片 1 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=60" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">Apple iPhone 14 Pro 256GB 暗紫色
+                            支持移动联通电信5G</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.8 (128)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8999</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 2 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=61" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">华为 MateBook 14s 2023款 12代酷睿i5 16G 512G
+                            2.5K 90Hz</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.2 (86)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥5699</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥6299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 3 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=62" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">优惠</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">小米 13 Pro 骁龙8 Gen2 徕卡三摄 2K曲面屏
+                            12GB+256GB</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.9 (215)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥4999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥5699</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 4 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=63" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">三星 Galaxy S23 Ultra 256GB 幻影黑 骁龙8
+                            Gen2 5G手机</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.7 (156)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7399</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 广告区域-特惠活动 -->
+        <div class="bg-gradient-to-r from-red-600 to-yellow-400 rounded-lg overflow-hidden mb-8 h-48 md:h-64 flex items-center">
+            <div class="px-8 md:px-12">
+                <h3 class="text-white text-2xl md:text-3xl font-bold mb-2">特惠活动</h3>
+                <p class="text-white/90 mb-4">商城特惠狂欢，畅享超值购物盛宴！</p>
+                <div class="flex items-center space-x-2 mb-4">
+                    <div id="hour2"
+                         class="bg-white text-primary w-10 h-10 rounded-md flex items-center justify-center font-bold text-lg">
+                        12
+                    </div>
+                    <span class="text-white">:</span>
+                    <div id="minutes2"
+                         class="bg-white text-primary w-10 h-10 rounded-md flex items-center justify-center font-bold text-lg">
+                        30
+                    </div>
+                    <span class="text-white">:</span>
+                    <div id="second2"
+                         class="bg-white text-primary w-10 h-10 rounded-md flex items-center justify-center font-bold text-lg">
+                        45
+                    </div>
+                </div>
+                <button class="bg-white text-primary px-6 py-2 rounded-full font-medium hover:bg-white/90 transition-colors duration-300">
+                    立即参与
+                </button>
+            </div>
+            <div class="hidden md:block flex-1 h-full">
+                <img src="https://picsum.photos/600/300?random=32" alt="广告图片" class="w-full h-full object-cover">
+            </div>
+        </div>
+
+
+        <!-- 礼品鲜花 -->
+        <div id="five" class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-dark"><i class="fa fa-gift text-yellow-600 text-xl"> 礼品鲜花</i>
+                </h2>
+                <a href="#" class="text-primary hover:text-primary/80 flex items-center transition-colors duration-200">
+                    <span>查看更多</span>
+                    <i class="fa fa-angle-right ml-1"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 商品卡片 1 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=64" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">Apple iPhone 14 Pro 256GB 暗紫色
+                            支持移动联通电信5G</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.8 (128)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8999</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 2 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=65" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">华为 MateBook 14s 2023款 12代酷睿i5 16G 512G
+                            2.5K 90Hz</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.2 (86)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥5699</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥6299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 3 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=66" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">优惠</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">小米 13 Pro 骁龙8 Gen2 徕卡三摄 2K曲面屏
+                            12GB+256GB</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.9 (215)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥4999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥5699</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 4 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=67" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">三星 Galaxy S23 Ultra 256GB 幻影黑 骁龙8
+                            Gen2 5G手机</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.7 (156)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7399</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 汽车用品 -->
+        <div id="six" class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-dark"><i class="fa fa-car text-red-600 text-xl"> 汽车用品</i></h2>
+                <a href="#" class="text-primary hover:text-primary/80 flex items-center transition-colors duration-200">
+                    <span>查看更多</span>
+                    <i class="fa fa-angle-right ml-1"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 商品卡片 1 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=68" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">Apple iPhone 14 Pro 256GB 暗紫色
+                            支持移动联通电信5G</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.8 (128)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8999</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 2 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=69" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded-full">新品</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">华为 MateBook 14s 2023款 12代酷睿i5 16G 512G
+                            2.5K 90Hz</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.2 (86)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥5699</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥6299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 3 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=70" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">优惠</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">小米 13 Pro 骁龙8 Gen2 徕卡三摄 2K曲面屏
+                            12GB+256GB</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.9 (215)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥4999</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥5699</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 商品卡片 4 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-scale">
+                    <div class="relative">
+                        <img src="https://picsum.photos/300/300?random=71" alt="商品图片"
+                             class="w-full h-56 object-cover">
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">热销</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-dark font-medium mb-2 line-clamp-2">三星 Galaxy S23 Ultra 256GB 幻影黑 骁龙8
+                            Gen2 5G手机</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center text-yellow-400 mr-2">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                            <span class="text-gray-medium text-sm">4.7 (156)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-primary font-bold text-lg">¥7399</span>
+                                <span class="text-gray-medium text-sm line-through ml-2">¥8299</span>
+                            </div>
+                            <button class="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors duration-200">
+                                <i class="fa fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户评价 -->
+        <div id="seven" class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-dark"><i class="fa fa-comments"> 用户评价</i></h2>
+                <a href="#" class="text-primary hover:text-primary/80 flex items-center transition-colors duration-200">
+                    <span>查看更多</span>
+                    <i class="fa fa-angle-right ml-1"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 评价卡片 1 -->
+                <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <img src="https://picsum.photos/60/60?random=50" alt="用户头像"
+                             class="w-12 h-12 rounded-full object-cover">
+                        <div class="ml-3">
+                            <h4 class="text-dark font-medium">张先生</h4>
+                            <div class="flex items-center text-yellow-400 mt-1">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-dark mb-3">
+                        "购买的笔记本电脑性能非常好，运行速度快，屏幕显示清晰，散热也不错。客服态度也很好，有问必答，非常满意的一次购物体验！"</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-medium text-sm">2025-05-10</span>
+                        <div class="flex space-x-1">
+                            <img src="https://picsum.photos/80/80?random=51" alt="评价图片"
+                                 class="w-16 h-16 object-cover rounded">
+                            <img src="https://picsum.photos/80/80?random=52" alt="评价图片"
+                                 class="w-16 h-16 object-cover rounded">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评价卡片 2 -->
+                <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <img src="https://picsum.photos/60/60?random=53" alt="用户头像"
+                             class="w-12 h-12 rounded-full object-cover">
+                        <div class="ml-3">
+                            <h4 class="text-dark font-medium">李女士</h4>
+                            <div class="flex items-center text-yellow-400 mt-1">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-dark mb-3">
+                        "手机拍照效果很好，电池续航也不错，就是感觉有点重。物流速度很快，包装也很精美，总体来说还是很满意的。"</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-medium text-sm">2025-05-08</span>
+                        <div class="flex space-x-1">
+                            <img src="https://picsum.photos/80/80?random=54" alt="评价图片"
+                                 class="w-16 h-16 object-cover rounded">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 评价卡片 3 -->
+                <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <img src="https://picsum.photos/60/60?random=55" alt="用户头像"
+                             class="w-12 h-12 rounded-full object-cover">
+                        <div class="ml-3">
+                            <h4 class="text-dark font-medium">王先生</h4>
+                            <div class="flex items-center text-yellow-400 mt-1">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-dark mb-3">
+                        "耳机音质很棒，降噪效果也很好，佩戴舒适，长时间使用也不会感到不适。唯一缺点是价格有点贵，不过物有所值。"</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-medium text-sm">2025-05-05</span>
+                        <div class="flex space-x-1">
+                            <img src="https://picsum.photos/80/80?random=56" alt="评价图片"
+                                 class="w-16 h-16 object-cover rounded">
+                            <img src="https://picsum.photos/80/80?random=57" alt="评价图片"
+                                 class="w-16 h-16 object-cover rounded">
+                            <img src="https://picsum.photos/80/80?random=58" alt="评价图片"
+                                 class="w-16 h-16 object-cover rounded">
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- 评价卡片 2 -->
+                <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <img src="https://picsum.photos/60/60?random=53" alt="用户头像"
+                             class="w-12 h-12 rounded-full object-cover">
+                        <div class="ml-3">
+                            <h4 class="text-dark font-medium">李女士</h4>
+                            <div class="flex items-center text-yellow-400 mt-1">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-dark mb-3">
+                        "手机拍照效果很好，电池续航也不错，就是感觉有点重。物流速度很快，包装也很精美，总体来说还是很满意的。"</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-medium text-sm">2025-05-08</span>
+                        <div class="flex space-x-1">
+                            <img src="https://picsum.photos/80/80?random=54" alt="评价图片"
+                                 class="w-16 h-16 object-cover rounded">
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- 评价卡片 3 -->
+                <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <img src="https://picsum.photos/60/60?random=55" alt="用户头像"
+                             class="w-12 h-12 rounded-full object-cover">
+                        <div class="ml-3">
+                            <h4 class="text-dark font-medium">王先生</h4>
+                            <div class="flex items-center text-yellow-400 mt-1">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-dark mb-3">
+                        "耳机音质很棒，降噪效果也很好，佩戴舒适，长时间使用也不会感到不适。唯一缺点是价格有点贵，不过物有所值。"</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-medium text-sm">2025-05-05</span>
+                        <div class="flex space-x-1">
+                            <img src="https://picsum.photos/80/80?random=56" alt="评价图片"
+                                 class="w-16 h-16 object-cover rounded">
+                            <img src="https://picsum.photos/80/80?random=57" alt="评价图片"
+                                 class="w-16 h-16 object-cover rounded">
+                            <img src="https://picsum.photos/80/80?random=58" alt="评价图片"
+                                 class="w-16 h-16 object-cover rounded">
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- 评价卡片 1 -->
+                <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <img src="https://picsum.photos/60/60?random=50" alt="用户头像"
+                             class="w-12 h-12 rounded-full object-cover">
+                        <div class="ml-3">
+                            <h4 class="text-dark font-medium">张先生</h4>
+                            <div class="flex items-center text-yellow-400 mt-1">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-dark mb-3">
+                        "购买的笔记本电脑性能非常好，运行速度快，屏幕显示清晰，散热也不错。客服态度也很好，有问必答，非常满意的一次购物体验！"</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-medium text-sm">2025-05-10</span>
+                        <div class="flex space-x-1">
+                            <img src="https://picsum.photos/80/80?random=51" alt="评价图片"
+                                 class="w-16 h-16 object-cover rounded">
+                            <img src="https://picsum.photos/80/80?random=52" alt="评价图片"
+                                 class="w-16 h-16 object-cover rounded">
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 底部导航 -->
+<footer class="bg-dark text-white py-12">
+    <div class="container mx-auto px-4">
+
+        <div class="service mx-auto mt-auto w-auto h-[100px] max-md:h-[235px]">
+            <ul class="flex flex-wrap justify-center md:justify-between">
+                <li class="flex pl-10 w-full md:w-[297px] h-[50px] mb-4 md:mb-0">
+                    <h5 class="mr-2.5 w-[36px] h-[42px] bg-sprite bg-sprite-0-192"></h5>
+                    <p class="text-lg text-gray-light font-bold leading-[42px]">品类齐全，轻松购物</p>
+                </li>
+                <li class="flex pl-10 w-full md:w-[297px] h-[42px] mb-4 md:mb-0">
+                    <h5 class="mr-2.5 w-[36px] h-[42px] bg-sprite bg-sprite-41-192"></h5>
+                    <p class="text-lg text-gray-light font-bold leading-[42px]">多仓直发，极速配送</p>
+                </li>
+                <li class="flex pl-10 w-full md:w-[297px] h-[42px] mb-4 md:mb-0">
+                    <h5 class="mr-2.5 w-[36px] h-[42px] bg-sprite bg-sprite-82-192"></h5>
+                    <p class="text-lg text-gray-light font-bold leading-[42px]">正品行货，精致服务</p>
+                </li>
+                <li class="flex pl-10 w-full md:w-[297px] h-[42px] mb-4 md:mb-0">
+                    <h5 class="mr-2.5 w-[36px] h-[42px] bg-sprite bg-sprite-123-192"></h5>
+                    <p class="text-lg text-gray-light font-bold leading-[42px]">天天低价，畅选无忧</p>
+                </li>
+            </ul>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 max-xl:mt-[39px]">
+            <div>
+                <h3 class="text-lg font-bold mb-4">关于我们</h3>
+                <ul class="space-y-2">
+                    <li><a href="#"
+                           class="text-gray-medium hover:text-white transition-colors duration-200">公司简介</a></li>
+                    <li><a href="#"
+                           class="text-gray-medium hover:text-white transition-colors duration-200">招贤纳士</a></li>
+                    <li><a href="#"
+                           class="text-gray-medium hover:text-white transition-colors duration-200">联系我们</a></li>
+                    <li><a href="#"
+                           class="text-gray-medium hover:text-white transition-colors duration-200">隐私政策</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold mb-4">帮助中心</h3>
+                <ul class="space-y-2">
+                    <li><a href="#"
+                           class="text-gray-medium hover:text-white transition-colors duration-200">购物指南</a></li>
+                    <li><a href="#"
+                           class="text-gray-medium hover:text-white transition-colors duration-200">支付方式</a></li>
+                    <li><a href="#"
+                           class="text-gray-medium hover:text-white transition-colors duration-200">配送说明</a></li>
+                    <li><a href="#"
+                           class="text-gray-medium hover:text-white transition-colors duration-200">售后服务</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold mb-4">客户服务</h3>
+                <ul class="space-y-2">
+                    <li><a href="#"
+                           class="text-gray-medium hover:text-white transition-colors duration-200">在线客服</a></li>
+                    <li><a href="#"
+                           class="text-gray-medium hover:text-white transition-colors duration-200">常见问题</a></li>
+                    <li><a href="#"
+                           class="text-gray-medium hover:text-white transition-colors duration-200">意见反馈</a></li>
+                    <li><a href="#"
+                           class="text-gray-medium hover:text-white transition-colors duration-200">投诉建议</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold mb-4">关注我们</h3>
+                <div class="flex space-x-4 mb-4">
+                    <a href="#"
+                       class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors duration-200">
+                        <i class="fab fa-weixin"></i>
+                    </a>
+                    <a href="#"
+                       class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors duration-200">
+                        <i class="fab fa-weibo"></i>
+                    </a>
+                    <a href="#"
+                       class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors duration-200">
+                        <i class="fab fa-qq"></i>
+                    </a>
+                    <a href="#"
+                       class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors duration-200">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+                <div class="bg-white/10 p-4 rounded-lg">
+                    <h4 class="font-medium mb-2">客服热线</h4>
+                    <p class="text-xl font-bold">400-123-4567</p>
+                    <p class="text-gray-medium text-sm mt-1">周一至周日 9:00-22:00</p>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-white/10 mt-8 pt-8 text-center text-gray-medium text-sm">
+            <div class="text-center">
+                <p class="mb-2.5 text-gray-dark">
+                    <a class="mx-2.5 text-gray-dark" href="#">关于我们</a>|
+                    <a class="mx-2.5 text-gray-dark" href="#">帮助中心</a>|
+                    <a class="mx-2.5 text-gray-dark" href="#">售后服务</a>|
+                    <a class="mx-2.5 text-gray-dark" href="#">配送与验收</a>|
+                    <a class="mx-2.5 text-gray-dark" href="#">商务合作</a>|
+                    <a class="mx-2.5 text-gray-dark" href="#">搜索推荐</a>|
+                    <a class="mx-2.5 text-gray-dark" href="#">友情链接</a>
+                </p>
+                <p class="text-gray-dark">CopyRight © 2025 购物商城 版权所有 | 营业执照 | 增值电信业务许可证 |
+                    互联网经营许可证</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- 右侧悬浮工具栏 -->
+<div class="fixed right-4 bottom-10 z-40 flex flex-col space-y-3">
+    <!--个人登录按钮-->
+    <button class="bg-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors duration-200">
+        <i class="fas fa-user"></i>
+    </button>
+    <!--用户评价按钮-->
+    <a href="#seven"
+       class="bg-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors duration-200">
+        <i class="fa fa-comments"></i>
+    </a>
+    <!--购物车按钮-->
+    <button class="bg-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors duration-200">
+        <i class="fa fa-shopping-cart"></i>
+    </button>
+    <!--返回顶部按钮-->
+    <button class="bg-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors duration-200">
+        <i class="fa fa-arrow-up"></i>
+    </button>
+</div>
+
+
+<!--商城弹窗-->
+<div id="popup" class="hidden max-[640px]:hidden">
+    <div class="login-bottom-bar-wrapper" style="background-color: rgba(0, 0, 0, 0.8);opacity: 1;">
+        <div class="login-bottom-bar-content"
+             style="background: url(images/商城弹窗.png) center top / 100% 100% no-repeat;">
+            <div class="login-bottom-bar-left">
+                <div class="login-bottom-bar-left-icon"></div>
+            </div>
+            <div class="login-bottom-bar-right"><a class="login-bottom-bar-right-receiveBtn" target="_blank"
+                                                   href="#"></a>
+                <div class="login-bottom-bar-right-closeBtn"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="assets/jQuery/jquery.min.js"></script>
+<script src="js/index_jQuery.js"></script>
+<script src="js/商城弹窗.js"></script>
+<script src="js/计时器.js"></script>
+<script src="js/计时器2.js"></script>
+
+</body>
+</html>

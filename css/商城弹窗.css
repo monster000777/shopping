@@ -1,0 +1,87 @@
+.login-bottom-bar-wrapper {
+    width: 656px;
+    height: 88px;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    margin-left: -340px;
+    z-index: 99999999;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: auto;
+    pointer-events: auto;
+    border-radius: 12px;
+    opacity: 1;
+    /* background:rgba(0,0,0,.7); */
+    -webkit-transition: opacity .5s ease-in-out;
+    transition: opacity .5s ease-in-out
+}
+
+.login-bottom-bar-content, .login-bottom-bar-wrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.login-bottom-bar-content {
+    min-width: 584px;
+    height: 48px;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between
+}
+
+.login-bottom-bar-left {
+    height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    pointer-events: none
+}
+
+.login-bottom-bar-left-icon {
+    width: 400px;
+    height: 48px
+}
+
+.login-bottom-bar-right {
+    height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1
+}
+
+.login-bottom-bar-right-receiveBtn {
+    width: 120px;
+    height: 48px;
+    margin-right: 48px;
+    display: block;
+    cursor: pointer
+}
+
+.login-bottom-bar-right-closeBtn {
+    width: 25px;
+    height: 25px;
+    cursor: pointer
+}
+
+#popup {
+    animation: fadeIn 0.5s ease-out; /* 0.5秒淡入 */
+}
